@@ -1,0 +1,14 @@
+High level design:
+
+My server and client use a Go-Back-N pipelined protocol. I divided
+the protocol into three main parts: handshaking, pipelining, and
+terminating the connection. Each part generally consisted of
+looping until the required messages were sent to terminate that
+stage of the protocol, allowing for both the server and client
+to respond to repeated messages (eg. the server responding to a 
+second SYN from the client while handshaking). To resend packets,
+I used a circular queue of the 10 most recent packets into order
+to resend data.
+
+The main issue I ran into was preventing loss, as it is easy to be
+off by a sequence number or resend the wrong packets upon timeout.
